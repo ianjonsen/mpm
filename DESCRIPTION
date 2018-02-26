@@ -8,7 +8,8 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Imports: 
-    TMB
+    TMB,
+    tibble
 LinkingTo: 
     TMB,
     RcppEigen

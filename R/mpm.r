@@ -24,7 +24,7 @@
 ##' \item{\code{opt}}{the object returned by the optimizer}
 ##' @useDynLib mpm
 ##' @importFrom TMB MakeADFun sdreport newtonOption
-##' @importFrom dplyr %>% group_by rowwise do
+##' @importFrom tibble data_frame
 ##' @export
 mpm <- function(data,
                 optim = c("nlminb", "optim"),
@@ -44,7 +44,7 @@ mpm <- function(data,
 
 
   parameters <- list(
-             lg = rep(1, dim(d)[1]),
+             lg = rep(1, dim(data)[1]),
              log_sigma = c(1, 1),
              log_sigma_g = 2
            )
@@ -112,7 +112,7 @@ mpm <- function(data,
       rep = rep,
       aic = aic
     ),
-    class = "mpmm"
+    class = "mpm"
     )
 
 }
