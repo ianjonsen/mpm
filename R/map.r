@@ -11,10 +11,9 @@
 ##' @export
 map <- function(m, proj = "lambert", params = c(-65, -45), xlim = c(0, 150), ylim = c(-70, -44)) {
 
-  countriesHigh <- NULL
+countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())
 wm <- suppressMessages(fortify(countriesHigh))
-
 
 p <-
   ggplot() +
