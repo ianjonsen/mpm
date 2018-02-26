@@ -56,7 +56,7 @@ mpm <- function(data,
                data = data.tmb,
                parameters = parameters,
                random = c("lg"),
-               DLL = "gamma",
+               DLL = "mpm",
                silent = !verbose
              )
 
