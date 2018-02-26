@@ -1,25 +1,29 @@
 ##' @title Generate a projected map of tracks shaded by behavioural state
+##' @param m a fitted object of class mpm
+##' @param proj a character string defining the map projection, default = "lambert"
+##' @param params parameters specific to the supplied projection
+##' @param xlim longitude range to plot
+##' @param ylim latitude range to plot
 ##' @importFrom ggplot2 fortify ggplot aes coord_map xlab ylab geom_point geom_polygon
 ##' @importFrom ggplot2 annotate theme theme_dark element_blank element_text aes_string
 ##' @importFrom mapproj mapproject
 ##' @importFrom viridis scale_colour_viridis
 ##' @export
-map_tracks <- function(d, xlim = c(0, 150), ylim = c(-70, -44)) {
+map <- function(m, proj = "lambert", params = c(-65, -45), xlim = c(0, 150), ylim = c(-70, -44)) {
 
-countriesHigh <- NULL
+  countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())
 wm <- suppressMessages(fortify(countriesHigh))
-xl <- xlim
-yl <- ylim
+
 
 p <-
   ggplot() +
-  coord_map(projection = "lambert", parameters = c(-65, -45), xlim = xl, ylim = yl) +
+  coord_map(projection = proj, parameters = params, xlim = xlim, ylim = ylim) +
   xlab("Longitude") + ylab("Latitude")
 
 p <- p +
-  geom_point(aes(x = lon, y = lat, colour = d$fitted$g),
-             data = d$data,
+  geom_point(aes(x = lon, y = lat, colour = m$fitted$g),
+             data = m$data,
              size = 0.5) +
   viridis::scale_colour_viridis(name = expression(italic(gamma[t])), begin = 0, end = 1, direction = -1) +
   theme_dark() +
