@@ -15,6 +15,9 @@ countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())
 wm <- suppressMessages(fortify(countriesHigh))
 
+if(is.null(xlim)) xlim <- extendrange(m$data$lon, f = 0.02)
+if(is.null(ylim)) ylim <- extendrange(m$data$lat, f = 0.02)
+
 p <-
   ggplot() +
   coord_map(projection = proj, parameters = params, xlim = xlim, ylim = ylim) +
