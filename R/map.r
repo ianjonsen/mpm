@@ -9,7 +9,7 @@
 ##' @importFrom mapproj mapproject
 ##' @importFrom viridis scale_colour_viridis
 ##' @export
-map <- function(m, proj = "lambert", params = c(-65, -45), xlim = c(0, 150), ylim = c(-70, -44)) {
+map <- function(m, proj = "lambert", params = NULL, xlim = NULL, ylim = NULL) {
 
 countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())

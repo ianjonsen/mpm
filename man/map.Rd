@@ -4,8 +4,7 @@
 \alias{map}
 \title{Generate a projected map of tracks shaded by behavioural state}
 \usage{
-map(m, proj = "lambert", params = c(-65, -45), xlim = c(0, 150),
-  ylim = c(-70, -44))
+map(m, proj = "lambert", params = NULL, xlim = NULL, ylim = NULL)
 }
 \arguments{
 \item{m}{a fitted object of class mpm}
