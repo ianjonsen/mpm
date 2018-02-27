@@ -1,7 +1,7 @@
 Package: mpm
 Version: 0.1.0.9000
-Title: What the Package Does (One Line, Title Case)
-Description: FIt a random walk with time-varying move persistence (autocorrelation) model to location data observed without error (or pre-filtered).
+Title: (animal) Move Persistence Model
+Description: Fit a random walk with time-varying move persistence (autocorrelation) model to location data observed without error (or pre-filtered).
 Authors@R: person("Ian", "Jonsen", email = "ian.jonsen@mq.edu.au", role = c("aut", "cre"))
 License: AGPL-3
 Encoding: UTF-8
