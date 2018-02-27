@@ -44,21 +44,7 @@ p <- p +
     fill = grey(0.95)
   )
 
-#if(deparse(substitute(d)) == "fit.pel") {
-  p <- p +
-  annotate("text", label = "45 S", x = 3, y = -45, size = 2.5, colour = "white") +
-  annotate("text", label = "55 S", x = 3, y = -55, size = 2.5, colour = "white") +
-  annotate("text", label = "65 S", x = 3, y = -65, size = 2.5, colour = "white") +
-  annotate("text", label = "50 E", x = 50, y = -43, size = 2.5, colour = "white") +
-  annotate("text", label = "100 E", x = 100, y = -43, size = 2.5, colour = "white")
-# } else {
-#   p <- p +
-#     annotate("text", label = "50 S", x = 5, y = -50, size = 2.5, colour = "white") +
-#     annotate("text", label = "60 S", x = 5, y = -60, size = 2.5, colour = "white") +
-#     annotate("text", label = "50 E", x = 50, y = -45, size = 2.5, colour = "white") +
-#     annotate("text", label = "100 E", x = 100, y = -45, size = 2.5, colour = "white")
-#
-# }
+
 
 p
 }
