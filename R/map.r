@@ -9,14 +9,14 @@
 ##' @importFrom mapproj mapproject
 ##' @importFrom viridis scale_colour_viridis
 ##' @export
-map <- function(m, proj = "lambert", params = NULL, xlim = NULL, ylim = NULL) {
+map <- function(m, proj = "mercator", params = NULL, xlim = NULL, ylim = NULL) {
 
 countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())
 wm <- suppressMessages(fortify(countriesHigh))
 
-if(is.null(xlim)) xlim <- extendrange(m$data$lon, f = 0.02)
-if(is.null(ylim)) ylim <- extendrange(m$data$lat, f = 0.02)
+if(is.null(xlim)) xlim <- extendrange(m$data$lon, f = 0.04)
+if(is.null(ylim)) ylim <- extendrange(m$data$lat, f = 0.04)
 
 p <-
   ggplot() +
@@ -28,7 +28,10 @@ p <- p +
              data = m$data,
              size = 0.5) +
   viridis::scale_colour_viridis(name = expression(italic(gamma[t])), begin = 0, end = 1, direction = -1) +
-  theme_dark() +
+  theme_dark()
+
+if(proj == "lambert") {
+  p <- p +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank()) +
@@ -36,6 +39,7 @@ p <- p +
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank()) +
   theme(legend.title = element_text(hjust = 0.5))
+  }
 
 p <- p +
   geom_polygon(
@@ -43,8 +47,6 @@ p <- p +
     aes_string(x = "long", y = "lat", group = "group"),
     fill = grey(0.95)
   )
-
-
 
 p
 }
