@@ -13,7 +13,7 @@ On PC's running Windows, ensure you have installed [Rtools](https://cran.r-proje
 On Mac's, ensure you have installed [Xcode](https://developer.apple.com/xcode/) and Xcode developer tools. If installation is needed, make sure you start Xcode after install to ensure final setup of developer tools is completed. Both Xcode and Xcode developer tools can be installed from the [Mac App Store](https://itunes.apple.com/au/app/xcode/id497799835?mt=12)
 
 ### From GitHub
-`mpmm` development version is available via:
+`mpm` development version is available via:
 ```
 devtools::install_github("ianjonsen/mpm")
 ```
