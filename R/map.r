@@ -9,7 +9,7 @@
 ##' @importFrom mapproj mapproject
 ##' @importFrom viridis scale_colour_viridis
 ##' @export
-map <- function(m, proj = "mercator", params = NULL, xlim = NULL, ylim = NULL) {
+map <- function(m, proj = "mercator", params = NULL, xlim = NULL, ylim = NULL, theme = "dark") {
 
 countriesHigh <- NULL
 data(countriesHigh, package = "rworldxtra", envir = environment())
@@ -28,7 +28,12 @@ p <- p +
              data = m$data,
              size = 0.5) +
   viridis::scale_colour_viridis(name = expression(italic(gamma[t])), begin = 0, end = 1, direction = -1) +
-  theme_dark()
+  switch(theme,
+         dark = theme_dark(),
+         none = theme_void(),
+         light = theme_light(),
+         minimal = theme_minimal()
+  )
 
 if(proj == "lambert") {
   p <- p +
