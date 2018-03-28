@@ -1,7 +1,10 @@
 ##' @title Generate a projected map of tracks shaded by behavioural state
 ##' @param m a fitted object of class mpm
+##' @param quickmap should a quick map be render using ggplot2::coord_quickmap, if so
+##' then proj, param and orientation arguments will be ignored
 ##' @param proj a character string defining the map projection, default = "lambert"
 ##' @param params parameters specific to the supplied projection
+##' @param orientation
 ##' @param xlim longitude range to plot
 ##' @param ylim latitude range to plot
 ##' @importFrom ggplot2 fortify ggplot aes coord_map xlab ylab geom_point geom_polygon
@@ -11,6 +14,7 @@
 ##' @export
 map <-
   function(m,
+           quickmap = FALSE,
            proj = "mercator",
            params = NULL,
            orientation = NULL,
@@ -32,13 +36,21 @@ map <-
 
 p <-
   ggplot() +
+if(!quickmap) {
   coord_map(
     projection = proj,
     parameters = params,
     orientation = orientation,
     xlim = xlim,
     ylim = ylim
-  ) +
+  )
+}
+else {
+  coord_quickmap(
+    xlim = xlim,
+    ylim = ylim
+  )
+} +
   xlab("Longitude") + ylab("Latitude")
 
 p <- p +
@@ -58,7 +70,7 @@ else if(theme == "light") { theme_light() }
 else if(theme == "classic") { theme_classic() }
 ## FIXME: should we go w "void" & use Sumner's graticule() here? at least for conic projections
 
- if(proj != "mercator") {
+ if(proj != "mercator" & !quickmap) {
    p <- p +
 #   theme(axis.title.x = element_blank(),
 #         axis.text.x = element_blank(),
