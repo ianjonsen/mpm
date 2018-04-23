@@ -1,18 +1,20 @@
 ##' @title Generate a projected map of tracks shaded by behavioural state
 ##' @param m a fitted object of class mpm
-##' @param quickmap should a quick map be render using ggplot2::coord_quickmap, if so
-##' then proj, param and orientation arguments will be ignored
+##' @param quickmap should a quick map be rendered using ggplot2::coord_quickmap, if so then proj, params and orientation arguments will be ignored
 ##' @param proj a character string defining the map projection, default = "lambert"
 ##' @param params parameters specific to the supplied projection
 ##' @param orientation
 ##' @param xlim longitude range to plot
 ##' @param ylim latitude range to plot
+##' @param vopt specifies which viridis colour palette is to be used
+##' @param dir direction of viridis colour palette, default = 1, use -1 to reverse
+##' @param theme ggplot2 theme to be used - choices include, "dark", "minimal", "void", "light" and "classic"
 ##' @importFrom ggplot2 fortify ggplot aes coord_map xlab ylab geom_point geom_polygon
 ##' @importFrom ggplot2 annotate theme theme_dark element_blank element_text aes_string
 ##' @importFrom mapproj mapproject
 ##' @importFrom viridis scale_colour_viridis
 ##' @export
-map <-
+map_tracks <-
   function(m,
            quickmap = FALSE,
            proj = "mercator",
@@ -20,6 +22,8 @@ map <-
            orientation = NULL,
            xlim = NULL,
            ylim = NULL,
+           vopt = "E",
+           dir = 1,
            theme = "dark",
            landcol = grey(0.95)) {
 
@@ -35,9 +39,10 @@ map <-
       filter(., lat <= ylim[2]) ## FIXME: this is biased to S hemisphere...
 
 p <-
-  ggplot() +
+  ggplot()
+
 if(!quickmap) {
-  coord_map(
+  p <- p + coord_map(
     projection = proj,
     parameters = params,
     orientation = orientation,
@@ -46,12 +51,14 @@ if(!quickmap) {
   )
 }
 else {
-  coord_quickmap(
+  p <- p + coord_quickmap(
     xlim = xlim,
-    ylim = ylim
+    ylim = ylim,
+    expand = FALSE
   )
-} +
-  xlab("Longitude") + ylab("Latitude")
+}
+
+p <- p + xlab("Longitude") + ylab("Latitude")
 
 p <- p +
   geom_point(aes(x = lon, y = lat, colour = m$fitted$g),
@@ -61,7 +68,8 @@ p <- p +
     name = expression(italic(gamma[t])),
     begin = 0,
     end = 1,
-    direction = -1
+    direction = dir,
+    option = vopt
   ) +
     if(theme == "dark") { theme_dark() }
 else if(theme == "minimal") { theme_minimal() }
