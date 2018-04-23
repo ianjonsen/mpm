@@ -68,6 +68,7 @@ p <- p +
     name = expression(italic(gamma[t])),
     begin = 0,
     end = 1,
+    limits = c(0,1),
     direction = dir,
     option = vopt
   ) +
