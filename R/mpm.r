@@ -58,21 +58,22 @@ mpm <- function(data,
 
   obj$env$tracemgc <- verbose
 
-#  obj$control <- list(trace = 0,
-#                      reltol = 1e-12,
-#                      maxit = 500)
-#  obj$hessian <- TRUE
-#  newtonOption(obj, smartsearch = TRUE)
+  ## add par values to trace if verbose = TRUE
+  myfn <- function(x) {
+    print("pars:")
+    print(x)
+    obj$fn(x)
+  }
 
   ## Minimize objective function
   opt <-
     suppressWarnings(switch(optim,
                             nlminb = try(nlminb(obj$par,
                                                 obj$fn,
+                                                #myfn,
                                                 obj$gr,
                                                 control = control
-                            ))
-                            , #myfn #obj$fn
+                            )),
                             optim = try(do.call(
                               optim,
                               args = list(
@@ -92,14 +93,12 @@ mpm <- function(data,
 
   lg <- rdm[rownames(rdm) %in% "lg", ]
 
-
     fitted <- data_frame(
       id = data$id,
       date = data$date,
       g = plogis(lg[, 1]),
       g.se = lg[, 2]
     )
-
 
     if (optim == "nlminb") {
       aic <- 2 * length(opt[["par"]]) + 2 * opt[["objective"]]
