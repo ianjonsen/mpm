@@ -2,9 +2,10 @@
 % Please edit documentation in R/mpm.r
 \name{mpm}
 \alias{mpm}
-\title{Random Walk with autocorrelation Filter}
+\title{Move Persistence Model}
 \usage{
-mpm(data, optim = c("nlminb", "optim"), verbose = FALSE)
+mpm(data, optim = c("nlminb", "optim"), verbose = FALSE,
+  control = NULL, inner.control = NULL)
 }
 \arguments{
 \item{data}{a data frame of observations (see details)}
@@ -12,6 +13,10 @@ mpm(data, optim = c("nlminb", "optim"), verbose = FALSE)
 \item{optim}{numerical optimizer}
 
 \item{verbose}{report progress during minimization}
+
+\item{control}{list of control parameters for the outer optimization (type ?nlminb or ?optim for details)}
+
+\item{inner.control}{list of control parameters for the inner optimization}
 }
 \value{
 a list with components
@@ -22,18 +27,6 @@ a list with components
 \item{\code{opt}}{the object returned by the optimizer}
 }
 \description{
-Move Persistence Model
-}
-\details{
-Fit a random walk with time-varying move persistence to location data
+fit a random walk with time-varying move persistence to location data
 without measurement error
-
-The input track is given as a dataframe where each row is a location a constant
-time interval from the previous row, and columns:
-\describe{
-\item{'id'}{individual identification,}
-\item{'date'}{observation time (POSIXct,GMT),}
-\item{'lon'}{observed longitude,}
-\item{'lat'}{observed latitude.}
-}
 }

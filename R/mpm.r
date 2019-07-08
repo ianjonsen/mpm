@@ -1,21 +1,11 @@
-##' Move Persistence Model
-##'
-##' Fit a random walk with time-varying move persistence to location data
+##' @title Move Persistence Model
+##' @description fit a random walk with time-varying move persistence to location data
 ##' without measurement error
-##'
-##' The input track is given as a dataframe where each row is a location a constant
-##' time interval from the previous row, and columns:
-##' \describe{
-##' \item{'id'}{individual identification,}
-##' \item{'date'}{observation time (POSIXct,GMT),}
-##' \item{'lon'}{observed longitude,}
-##' \item{'lat'}{observed latitude.}
-##' }
-##'
-##' @title Random Walk with autocorrelation Filter
 ##' @param data a data frame of observations (see details)
 ##' @param optim numerical optimizer
 ##' @param verbose report progress during minimization
+##' @param control list of control parameters for the outer optimization (type ?nlminb or ?optim for details)
+##' @param inner.control list of control parameters for the inner optimization
 ##' @return a list with components
 ##' \item{\code{fitted}}{a dataframe of fitted locations}
 ##' \item{\code{par}}{model parameter summmary}
@@ -28,7 +18,9 @@
 ##' @export
 mpm <- function(data,
                 optim = c("nlminb", "optim"),
-                verbose = FALSE) {
+                verbose = FALSE,
+                control = NULL,
+                inner.control = NULL) {
 
   optim <- match.arg(optim)
 
