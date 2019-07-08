@@ -36,9 +36,9 @@ mpm <- function(data,
 
 
   parameters <- list(
-             lg = rep(1, dim(data)[1]),
-             log_sigma = c(1, 1),
-             log_sigma_g = 2
+             lg = rep(0, dim(data)[1]),
+             log_sigma = c(0, 0),
+             log_sigma_g = 0
            )
 
   ## TMB - create objective function
