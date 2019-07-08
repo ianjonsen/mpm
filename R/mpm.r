@@ -50,35 +50,50 @@ mpm <- function(data,
            )
 
   ## TMB - create objective function
-
+  if (is.null(inner.control) | !"smartsearch" %in% names(inner.control)) {
+    inner.control <- list(smartsearch = TRUE)
+  }
            obj <-
              MakeADFun(
                data = data.tmb,
                parameters = parameters,
                random = c("lg"),
                DLL = "mpm",
-               silent = !verbose
+               silent = !verbose,
+               inner.control = inner.control
              )
 
 
-  obj$env$inner.control$trace <- verbose
   obj$env$tracemgc <- verbose
 
-  obj$control <- list(trace = 0,
-                      reltol = 1e-12,
-                      maxit = 500)
-  obj$hessian <- TRUE
-  newtonOption(obj, smartsearch = TRUE)
+#  obj$control <- list(trace = 0,
+#                      reltol = 1e-12,
+#                      maxit = 500)
+#  obj$hessian <- TRUE
+#  newtonOption(obj, smartsearch = TRUE)
 
   ## Minimize objective function
-  opt <- suppressWarnings(switch(
-    optim,
-    nlminb = nlminb(obj$par, obj$fn, obj$gr),
-    optim = do.call("optim", obj)
-  ))
+  opt <-
+    suppressWarnings(switch(optim,
+                            nlminb = try(nlminb(obj$par,
+                                                obj$fn,
+                                                obj$gr,
+                                                control = control
+                            ))
+                            , #myfn #obj$fn
+                            optim = try(do.call(
+                              optim,
+                              args = list(
+                                par = obj$par,
+                                fn = obj$fn,
+                                gr = obj$gr,
+                                method = "L-BFGS-B",
+                                control = control
+                              )
+                            ))))
 
   ## Parameters, states and the fitted values
-  rep <- sdreport(obj)
+  rep <- suppressWarnings(try(sdreport(obj)))
   fxd <- summary(rep, "report")
   fxd_log <- summary(rep, "fixed")
   rdm <- summary(rep, "random")
@@ -94,13 +109,11 @@ mpm <- function(data,
     )
 
 
-  if (optim == "nlminb") {
-    aic <- 2 * length(opt[["par"]]) + 2 * opt[["objective"]]
-  }
-  else {
-    aic <- 2 * length(opt[["par"]]) + 2 * opt[["value"]]
-  }
-
+    if (optim == "nlminb") {
+      aic <- 2 * length(opt[["par"]]) + 2 * opt[["objective"]]
+    } else if (optim == "optim") {
+      aic <- 2 * length(opt[["par"]]) + 2 * opt[["value"]]
+    }
     row.names(fxd)[2:3] <- c("sigma_lon", "sigma_lat")
 
     structure(list(
