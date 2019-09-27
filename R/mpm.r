@@ -34,7 +34,6 @@ mpm <- function(data,
                  idx = idx
                ))
 
-
   parameters <- list(
              lg = rep(0, dim(data)[1]),
              log_sigma = c(0, 0),
@@ -49,7 +48,7 @@ mpm <- function(data,
              MakeADFun(
                data = data.tmb,
                parameters = parameters,
-               random = c("lg"),
+               random = c("lg"), #,"u"
                DLL = "mpm",
                silent = !verbose,
                inner.control = inner.control
@@ -93,7 +92,7 @@ mpm <- function(data,
 
   lg <- rdm[rownames(rdm) %in% "lg", ]
 
-    fitted <- data_frame(
+  fitted <- data_frame(
       id = data$id,
       date = data$date,
       g = plogis(lg[, 1]),
