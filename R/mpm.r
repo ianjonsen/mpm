@@ -1,21 +1,11 @@
-##' Move Persistence Model
-##'
-##' Fit a random walk with time-varying move persistence to location data
+##' @title Move Persistence Model
+##' @description fit a random walk with time-varying move persistence to location data
 ##' without measurement error
-##'
-##' The input track is given as a dataframe where each row is a location a constant
-##' time interval from the previous row, and columns:
-##' \describe{
-##' \item{'id'}{individual identification,}
-##' \item{'date'}{observation time (POSIXct,GMT),}
-##' \item{'lon'}{observed longitude,}
-##' \item{'lat'}{observed latitude.}
-##' }
-##'
-##' @title Random Walk with autocorrelation Filter
 ##' @param data a data frame of observations (see details)
 ##' @param optim numerical optimizer
 ##' @param verbose report progress during minimization
+##' @param control list of control parameters for the outer optimization (type ?nlminb or ?optim for details)
+##' @param inner.control list of control parameters for the inner optimization
 ##' @return a list with components
 ##' \item{\code{fitted}}{a dataframe of fitted locations}
 ##' \item{\code{par}}{model parameter summmary}
@@ -28,7 +18,9 @@
 ##' @export
 mpm <- function(data,
                 optim = c("nlminb", "optim"),
-                verbose = FALSE) {
+                verbose = FALSE,
+                control = NULL,
+                inner.control = NULL) {
 
   optim <- match.arg(optim)
 
@@ -42,65 +34,76 @@ mpm <- function(data,
                  idx = idx
                ))
 
-
   parameters <- list(
-             lg = rep(1, dim(data)[1]),
-             log_sigma = c(1, 1),
-             log_sigma_g = 2
+             lg = rep(0, dim(data)[1]),
+             log_sigma = c(0, 0),
+             log_sigma_g = 0
            )
 
   ## TMB - create objective function
-
+  if (is.null(inner.control) | !"smartsearch" %in% names(inner.control)) {
+    inner.control <- list(smartsearch = TRUE)
+  }
            obj <-
              MakeADFun(
                data = data.tmb,
                parameters = parameters,
-               random = c("lg"),
+               random = c("lg"), #,"u"
                DLL = "mpm",
-               silent = !verbose
+               silent = !verbose,
+               inner.control = inner.control
              )
 
 
-  obj$env$inner.control$trace <- verbose
   obj$env$tracemgc <- verbose
 
-  obj$control <- list(trace = 0,
-                      reltol = 1e-12,
-                      maxit = 500)
-  obj$hessian <- TRUE
-  newtonOption(obj, smartsearch = TRUE)
+  ## add par values to trace if verbose = TRUE
+  myfn <- function(x) {
+    print("pars:")
+    print(x)
+    obj$fn(x)
+  }
 
   ## Minimize objective function
-  opt <- suppressWarnings(switch(
-    optim,
-    nlminb = nlminb(obj$par, obj$fn, obj$gr),
-    optim = do.call("optim", obj)
-  ))
+  opt <-
+    suppressWarnings(switch(optim,
+                            nlminb = try(nlminb(obj$par,
+                                                obj$fn,
+                                                #myfn,
+                                                obj$gr,
+                                                control = control
+                            )),
+                            optim = try(do.call(
+                              optim,
+                              args = list(
+                                par = obj$par,
+                                fn = obj$fn,
+                                gr = obj$gr,
+                                method = "L-BFGS-B",
+                                control = control
+                              )
+                            ))))
 
   ## Parameters, states and the fitted values
-  rep <- sdreport(obj)
+  rep <- suppressWarnings(try(sdreport(obj)))
   fxd <- summary(rep, "report")
   fxd_log <- summary(rep, "fixed")
   rdm <- summary(rep, "random")
 
   lg <- rdm[rownames(rdm) %in% "lg", ]
 
-
-    fitted <- data_frame(
+  fitted <- data_frame(
       id = data$id,
       date = data$date,
       g = plogis(lg[, 1]),
       g.se = lg[, 2]
     )
 
-
-  if (optim == "nlminb") {
-    aic <- 2 * length(opt[["par"]]) + 2 * opt[["objective"]]
-  }
-  else {
-    aic <- 2 * length(opt[["par"]]) + 2 * opt[["value"]]
-  }
-
+    if (optim == "nlminb") {
+      aic <- 2 * length(opt[["par"]]) + 2 * opt[["objective"]]
+    } else if (optim == "optim") {
+      aic <- 2 * length(opt[["par"]]) + 2 * opt[["value"]]
+    }
     row.names(fxd)[2:3] <- c("sigma_lon", "sigma_lat")
 
     structure(list(
